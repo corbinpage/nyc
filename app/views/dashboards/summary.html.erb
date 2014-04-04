@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 twitter-profile">
+    <h1>Summary Dashboard</h1>
+    <div class="row">
+      <div class="col-md-12 col-sm-12 twitter-profile">
+        <!-- <div class="twitter-profile-card" style="background-image:url(<%=@scan.twitter_detail.background_image_url%>)"> -->
+        <div class="twitter-profile-card">
+          <div>
+            <img class="twitter-profile-pic" src="<%=@scan.twitter_detail.profile_image_url%>" alt="Corbin Page">
+          </div>
+          <div class="twitter-text">
+            <!-- Insert Image and Background Image here --> 
+            <h1 class="name"><%= @scan.twitter_detail.name%></h1>
+            <h2 class="username"><%= @scan.twitter_detail.user_name%></h2>
+            <p class="description"><%= @scan.twitter_detail.description%></p>
+            <p class="location-website"><%=@scan.twitter_detail.location%> - <a target="_blank" href=<%=@scan.twitter_detail.website_url%>><%=@scan.twitter_detail.website_url%></a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-2 col-md-offset-2 col-sm-3 col-sm-offset-3 col-xs-6">
+    <div class="box">
+      <div class="description">
+        <p>Active Since</p>
+        <p><%= format_datetime_for_dashboard(@scan.twitter_detail.account_created_at)%><p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-3 col-xs-6">
+    <div class="box">
+      <div class="icon">
+        <span class="glyphicon glyphicon-bullhorn"></span>
+      </div>
+      <div class="description">
+        <%= number_with_delimiter(@scan.twitter_detail.total_tweets, :delimiter => ',')%> Total Tweets
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-3 col-xs-6">
+    <div class="box">
+      <div class="icon">
+        <span class="glyphicon glyphicon-user"></span>
+      </div>
+      <div class="description">
+        <%= number_with_delimiter(@scan.twitter_detail.followers_count, :delimiter => ',')%> Followers
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-3 col-xs-6 col-sm-offset-3 col-md-offset-0">
+    <div class="box">
+      <div class="icon">
+        <span class="glyphicon glyphicon-eye-open"></span>
+      </div>
+      <div class="description">
+        Following <%= number_with_delimiter(@scan.twitter_detail.following_count, :delimiter => ',')%>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-sm-3 col-xs-6">
+    <div class="box">
+      <div class="icon">
+        <span class="glyphicon glyphicon-star"></span>
+      </div>
+      <div class="description">
+        <%= number_with_delimiter(@scan.twitter_detail.favorites_count, :delimiter => ',')%> Favorites
+      </div>
+    </div>
+  </div>
+</div>
+<%unless @scan.twitter_detail.protected_tweets %>
+<div class="row">
+  <div class="col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 col-md-offset-0">
+    <h1>Tweets Over Time</h1>
+    <h2>Tweets Per Month</h2>
+    <div class="row">
+      <%= line_chart @scan.tweets.group_by_month(:tweet_time).count, library: {colors: ['#00aeed']}%>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-5 col-md-offset-2 col-sm-4 col-sm-offset-3 col-md-offset-0">
+    <h2>Tweets By Weekday</h2>
+    <div class="row">
+      <%= column_chart @scan.tweets.group_by_day_of_week(:tweet_time, format: "%a").count, library: {colors: ['#00aeed']}%>
+    </div>
+  </div>
+  <div class="col-md-5 col-sm-4 col-sm-offset-1 col-md-offset-0">
+    <h2>Tweets By Hour</h2>
+    <div class="row">
+      <%= bar_chart @scan.tweets.group_by_hour_of_day(:tweet_time, time_zone: "Eastern Time (US & Canada)").count, library: {colors: ['#00aeed']}%>
+    </div>
+  </div>
+</div>
+
+<%else%>
+<div class="row">
+  <div class="col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 widget">
+    <h1 class="name">Your Tweets are protected!</h1>
+  </div>
+</div>
+<%end%>
